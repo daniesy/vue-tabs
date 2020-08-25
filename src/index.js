@@ -1,5 +1,12 @@
 import Vue from "vue";
-import Tabs from "./components/Tabs.vue";
 
-Vue.component("Tabs", Tabs);
-export default Tabs;
+import Tab from "./components/Tab";
+import Tabs from "./components/Tabs";
+
+const Components = { Tab, Tabs };
+
+for (let key in Components) {
+  Vue.component(key, Components[key]);
+}
+
+export default Components;

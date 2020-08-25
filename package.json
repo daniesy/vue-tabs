@@ -1,6 +1,6 @@
 {
   "name": "@daniesy/vue-tabs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/vue-tabs.common.js",
   "files": [
     "dist/*",
