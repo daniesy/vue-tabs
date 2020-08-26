@@ -6,8 +6,8 @@
     :id="cleanId"
     role="tabpanel"
   >
-    <slot />
-    <slot name="subtabs"></slot>
+    <slot v-if="!hasActiveDropdown" />
+    <slot name="dropdown" />
   </section>
 </template>
 
@@ -18,14 +18,25 @@ export default {
     id: { default: null },
     name: { required: true },
     isDisabled: { default: false },
-    activeSubTab: { type: String },
+    activeDropdownItem: { type: String },
     badge: [String, Number],
-    badgeFront: Boolean,
+    badgeFront: Boolean
   },
   data: () => ({
     isActive: false,
-    isVisible: true
+    isVisible: true,
+    selectedHash: "",
   }),
+  watch: {
+    isActive(value) {
+      if (value) { return; }
+      this.disableDropdowns();
+    },
+    hasActiveDropdown(value) {
+      if (value) { return }
+      this.disableDropdowns();
+    }
+  },
   computed: {
     cleanId() {
       return this.id ? this.id : this.name.toLowerCase().replace(/ /g, "-");
@@ -36,29 +47,35 @@ export default {
       }
       return `#${this.cleanId}`;
     },
-    subTabs() {
-      return this.$children.filter(child => child.$options.name === "SubTab");
+    dropdown() {
+      return this.$children.filter(child => child.$options.name === "Dropdown");
     },
-    hasSubTabs() {
-      return !!this.subTabs.length;
+    hasDropdown() {
+      return !!this.dropdown.length;
+    },
+    hasActiveDropdown() {
+      return !!this.$parent.activeDropdownHash
     }
   },
   mounted() {
-    if (this.activeSubTab) {
-      this.selectSubTab(`${this.hash}:${this.activeSubTab}`);
+    if (this.activeDropdownItem) {
+      this.selectDropdown(`${this.hash}:${this.activeDropdownItem}`);
     }
   },
   methods: {
-    selectSubTab(hash) {
+    selectDropdown(hash) {
       if (!hash || !hash.includes(":")) {
         return;
       }
-      this.subTabs.forEach(subTab => {
-        subTab.isActive = hash === subTab.hash;
+      this.dropdown.forEach(item => {
+        item.isActive = hash === item.hash;
       });
     },
-    findSubTab(hash) {
-      return this.subTabs.find(subTab => subTab.hash === hash);
+    findDropdown(hash) {      
+      return this.dropdown.find(item => item.hash === hash);
+    },
+    disableDropdowns() {
+      this.dropdown.forEach(item => item.isActive = false);
     }
   }
 };

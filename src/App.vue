@@ -1,7 +1,15 @@
 <template>
   <div id="app">
     <tabs>
-      <tab name="First tab" badge="123">World</tab>
+      <tab name="First tab" badge="123">
+        <template #dropdown>
+          <dropdown name="First Dropdown">First Dropdown</dropdown>
+          <dropdown name="Second Dropdown">Second Dropdown</dropdown>
+        </template>
+
+        First tab
+      </tab
+      >
       <tab name="Second">this</tab>
       <tab name="This is the last">this</tab>
     </tabs>
@@ -9,6 +17,7 @@
 </template>
 
 <script>
+import Dropdown from "./components/Dropdown";
 import Tab from "./components/Tab";
 import Tabs from "./components/Tabs";
 
@@ -19,7 +28,8 @@ export default {
   }),
   components: {
     Tab,
-    Tabs
+    Tabs,
+    Dropdown
   }
 };
 </script>

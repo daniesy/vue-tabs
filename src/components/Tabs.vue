@@ -7,7 +7,7 @@
         :class="{
           'c-tab--active': tab.isActive,
           'c-tab--disabled': tab.isDisabled,
-          'c-tab--has-sub': tab.hasSubTabs
+          'c-tab--dropdown': tab.hasDropdown
         }"
         class="c-tab"
         role="presentation"
@@ -20,29 +20,35 @@
           :href="tab.hash"
           class="c-tab__link"
           role="tab"
-        > 
-          <span v-if="tab.badge && tab.badgeFront" class="c-tab__badge">{{ tab.badge }}</span>       
+        >
+          <span v-if="tab.badge && tab.badgeFront" class="c-badge">{{
+            tab.badge
+          }}</span>
           {{ tab.name }}
-          <span v-if="tab.badge && !tab.badgeFront" class="c-tab__badge">{{ tab.badge }}</span>
-          <ul v-if="tab.hasSubTabs" class="c-subtabs">
+          <span v-if="tab.badge && !tab.badgeFront" class="c-badge">{{
+            tab.badge
+          }}</span>
+          <ul v-if="tab.hasDropdown" class="c-dropdown">
             <li
-              class="c-subtab"
-              :class="{ active: subTab.isActive }"
-              v-for="(subTab, j) in tab.subTabs"
+              class="c-dropdown__item"
+              :class="{ active: item.isActive }"
+              v-for="(item, j) in tab.dropdown"
               :key="j"
             >
               <a
-                @click.self="selectTab(subTab.hash, $event)"
-                :aria-controls="subTab.id"
-                :aria-selected="subTab.isActive"
-                :href="`${subTab.hash}`"
+                @click.self="selectTab(item.hash, $event)"
+                :aria-controls="item.id"
+                :aria-selected="item.isActive"
+                :href="`${item.hash}`"
                 role="tab"
               >
-                <span v-if="tab.badge" class="c-tab__badge">{{
-                  tab.badge
+                <span v-if="item.badge && item.badgeFront" class="c-badge">{{
+                  item.badge
                 }}</span>
-                {{ subTab.label }}</a
-              >
+                {{ item.name }}</a
+              ><span v-if="item.badge && !!item.badgeFront" class="c-badge">{{
+                item.badge
+              }}</span>
             </li>
           </ul>
         </a>
@@ -50,6 +56,7 @@
       <div :style="borderStyle" class="c-tabs__border" />
     </ul>
     <div class="c-tabs__content mt-3">
+      content
       <slot />
     </div>
   </div>
@@ -63,8 +70,8 @@ export default {
     activeTabIndex: 0,
     activeTabHash: "",
     lastActiveTabHash: "",
-    activeSubTabHash: "",
-    lastActiveSubTabHash: "",
+    activeDropdownHash: "",
+    lastActiveDropdownHash: "",
     borderStyle: {}
   }),
   props: {
@@ -103,12 +110,12 @@ export default {
       const [tabHash] = hash.split(":");
       return this.tabs.find(tab => tab.hash === tabHash);
     },
-    findSubTab(hash) {
+    findDropdown(hash) {
       const tab = this.findTab(hash);
       if (!tab) {
         return null;
       }
-      return tab.findSubTab(hash);
+      return tab.findDropdown(hash);
     },
     selectTab(hash, event) {
       if (event && !this.options.useUrlFragment) {
@@ -116,10 +123,9 @@ export default {
       }
 
       const selectedTab = this.findTab(hash);
-      const selectedSubTab = selectedTab.findSubTab(hash);
+      const selectedDropdown = selectedTab.findDropdown(hash);
 
       if (!selectedTab) {
-        console.log("nope");
         return;
       }
 
@@ -129,16 +135,17 @@ export default {
       }
 
       this.$nextTick(() => {
+        const [mainHash] = hash.split(":");
         const { x, width } = document
-          .querySelector(`a[href="${hash}"]`)
+          .querySelector(`a[href="${mainHash}"]`)
           .getBoundingClientRect();
         this.borderStyle = { left: `${x}px`, width: `${width}px` };
       });
 
       if (
         this.lastActiveTabHash === selectedTab.hash &&
-        !!selectedSubTab &&
-        this.lastActiveSubTabHash === selectedSubTab.hash
+        !!selectedDropdown &&
+        this.lastActiveDropdownHash === selectedDropdown.hash
       ) {
         this.$emit("clicked", { tab: selectedTab });
         return;
@@ -147,19 +154,19 @@ export default {
       this.tabs.forEach(tab => {
         if (tab.hash === selectedTab.hash) {
           tab.isActive = true;
-          tab.selectSubTab(hash);
+          tab.selectDropdown(hash);
         } else {
           tab.isActive = false;
         }
       });
 
-      this.$emit("changed", { tab: selectedTab, subTab: selectedSubTab });
+      this.$emit("changed", { tab: selectedTab, dropdown: selectedDropdown });
 
       this.activeTabIndex = this.getTabIndex(selectedTab);
       this.lastActiveTabHash = this.activeTabHash = selectedTab.hash;
-      this.lastActiveSubTabHash = this.activeSubTabHash = selectedSubTab
-        ? selectedSubTab.hash
-        : "";
+      this.lastActiveDropdownHash = this.activeDropdownHash = (selectedDropdown
+        ? selectedDropdown.hash
+        : "");
     },
     getTabIndex(selectedTab, hash) {
       if (!selectedTab && hash) {
@@ -185,7 +192,7 @@ export default {
       margin: 0 15px;
       transition: color 0.4s;
 
-      &.c-tab--has-sub {
+      &.c-tab--dropdown {
         &::after {
           content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3Cpath fill='none' d='M0 0h24v24H0V0z'/%3E%3C/svg%3E");
           display: inline-block;
@@ -202,12 +209,12 @@ export default {
             transform: rotate(-180deg);
           }
 
-          .c-subtabs {
+          .c-dropdown {
             opacity: 1;
             transform: translateY(5px);
             visibility: visible;
 
-            .c-subtab:hover {
+            .c-dropdown:hover {
               background-color: rgba(0, 0, 0, 0.05);
             }
           }
@@ -223,7 +230,7 @@ export default {
       }
 
       a {
-        .c-tab__badge {
+        .c-badge {
           font-size: 0.6rem;
           padding: 0.1rem 0.4rem;
           border: 1px solid;
@@ -248,7 +255,7 @@ export default {
         }
       }
 
-      .c-subtabs {
+      .c-dropdown {
         position: absolute;
         background-color: #fff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
@@ -258,8 +265,9 @@ export default {
         will-change: transform;
         transition: transform 0.4s, opacity 0.4s;
         visibility: hidden;
+        z-index: 1;
 
-        li.c-subtab {
+        li.c-dropdown__item {
           &.active {
             a {
               font-weight: bold;
@@ -270,6 +278,7 @@ export default {
             display: block;
             padding: 10px 15px;
             color: #203152;
+            text-decoration: none;
           }
         }
       }
