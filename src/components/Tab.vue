@@ -19,7 +19,8 @@ export default {
     name: { required: true },
     isDisabled: { default: false },
     activeSubTab: { type: String },
-    badge: [String, Number]
+    badge: [String, Number],
+    badgeFront: Boolean,
   },
   data: () => ({
     isActive: false,

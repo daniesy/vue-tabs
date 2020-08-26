@@ -20,9 +20,10 @@
           :href="tab.hash"
           class="c-tab__link"
           role="tab"
-        >
-          <span v-if="tab.badge" class="c-tab__badge">{{ tab.badge }}</span>
+        > 
+          <span v-if="tab.badge && tab.badgeFront" class="c-tab__badge">{{ tab.badge }}</span>       
           {{ tab.name }}
+          <span v-if="tab.badge && !tab.badgeFront" class="c-tab__badge">{{ tab.badge }}</span>
           <ul v-if="tab.hasSubTabs" class="c-subtabs">
             <li
               class="c-subtab"
