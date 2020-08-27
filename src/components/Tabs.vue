@@ -278,7 +278,7 @@ export default {
 
       &.c-tab--active {
         color: var(--active-color, #069247);
-        .c-tab__badge {
+        .c-badge {
           background: var(--active-color, #069247);
           color: var(--active-color-alt, #fff);
         }
