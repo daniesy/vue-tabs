@@ -21,11 +21,12 @@
           class="c-tab__link"
           role="tab"
         >
-          <span v-if="tab.badge && tab.badgeFront" class="c-badge">{{
+          <span v-if="tab.icon" class="c-icon" :class="tab.icon">{{ tab.iconContent }}</span>
+          <span v-if="tab.badge && tab.badgeFront" class="c-badge c-badge--before">{{
             tab.badge
           }}</span>
           {{ tab.name }}
-          <span v-if="tab.badge && !tab.badgeFront" class="c-badge">{{
+          <span v-if="tab.badge && !tab.badgeFront" class="c-badge c-badge--after">{{
             tab.badge
           }}</span>
           <ul v-if="tab.hasDropdown" class="c-dropdown">
@@ -42,6 +43,7 @@
                 :href="`${item.hash}`"
                 role="tab"
               >
+              <span v-if="item.icon" class="c-icon" :class="item.icon">{{ item.iconContent }}</span>
                 <span v-if="item.badge && item.badgeFront" class="c-badge">{{
                   item.badge
                 }}</span>
@@ -56,7 +58,6 @@
       <div :style="borderStyle" class="c-tabs__border" />
     </ul>
     <div class="c-tabs__content mt-3">
-      content
       <slot />
     </div>
   </div>
@@ -90,6 +91,7 @@ export default {
     window.addEventListener("hashchange", () =>
       this.selectTab(window.location.hash)
     );
+
     if (this.findTab(window.location.hash)) {
       this.selectTab(window.location.hash);
       return;
@@ -135,11 +137,7 @@ export default {
       }
 
       this.$nextTick(() => {
-        const [mainHash] = hash.split(":");
-        const { x, width } = document
-          .querySelector(`a[href="${mainHash}"]`)
-          .getBoundingClientRect();
-        this.borderStyle = { left: `${x}px`, width: `${width}px` };
+        this.moveBar(hash); 
       });
 
       if (
@@ -164,23 +162,30 @@ export default {
 
       this.activeTabIndex = this.getTabIndex(selectedTab);
       this.lastActiveTabHash = this.activeTabHash = selectedTab.hash;
-      this.lastActiveDropdownHash = this.activeDropdownHash = (selectedDropdown
-        ? selectedDropdown.hash
-        : "");
+      this.activeDropdownHash = selectedDropdown ? selectedDropdown.hash : "";
+      this.lastActiveDropdownHash = this.activeDropdownHash;
     },
     getTabIndex(selectedTab, hash) {
       if (!selectedTab && hash) {
         selectedTab = this.findTab(hash);
       }
       return this.tabs.indexOf(selectedTab);
+    },
+    moveBar(hash) {
+      const [mainHash] = hash.split(":");
+      const element = document.querySelector(`a[href="${mainHash}"]`).parentElement;
+      this.borderStyle = { left: `${element.offsetLeft}px`, width: `${element.offsetWidth}px` };
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.c-tabs {
+.c-tabs {  
   ul {
+    position: relative;
+    display: flex;
+    align-items: center;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -188,7 +193,8 @@ export default {
     li.c-tab {
       position: relative;
       font-size: 1.1rem;
-      display: inline-block;
+      display: flex;
+      align-items: center;
       margin: 0 15px;
       transition: color 0.4s;
 
@@ -197,7 +203,6 @@ export default {
           content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3Cpath fill='none' d='M0 0h24v24H0V0z'/%3E%3C/svg%3E");
           display: inline-block;
           position: relative;
-          top: 8px;
           height: 24px;
           margin-left: 2px;
           will-change: transform;
@@ -230,21 +235,33 @@ export default {
       }
 
       a {
+        .c-icon {
+          margin-right: 0.4rem;
+        }
         .c-badge {
           font-size: 0.6rem;
           padding: 0.1rem 0.4rem;
           border: 1px solid;
           border-radius: 4px;
           position: relative;
-          top: -0.15rem;
+          &.c-badge--before {
+            margin-right: 0.4rem;
+          }
+          &.c-badge--after {
+            margin-left: 0.4rem;
+          }
         }
       }
       & > a {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
         margin: 15px 0;
         font-weight: 600;
         text-decoration: none;
         color: inherit;
+        .c-icon {
+          line-height: inherit;
+        }
       }
 
       &.c-tab--active {
@@ -256,7 +273,9 @@ export default {
       }
 
       .c-dropdown {
+        display: block;
         position: absolute;
+        top: 100%;
         background-color: #fff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         border: 1px solid #eaedf3;
@@ -289,6 +308,7 @@ export default {
       margin-top: -1px;
       height: 2px;
       position: absolute;
+      bottom: 0;
     }
 
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);

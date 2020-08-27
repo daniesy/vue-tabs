@@ -20,20 +20,26 @@ export default {
     isDisabled: { default: false },
     activeDropdownItem: { type: String },
     badge: [String, Number],
-    badgeFront: Boolean
+    badgeFront: Boolean,
+    icon: String,
+    iconContent: String,
   },
   data: () => ({
     isActive: false,
     isVisible: true,
-    selectedHash: "",
+    selectedHash: ""
   }),
   watch: {
     isActive(value) {
-      if (value) { return; }
+      if (value) {
+        return;
+      }
       this.disableDropdowns();
     },
     hasActiveDropdown(value) {
-      if (value) { return }
+      if (value) {
+        return;
+      }
       this.disableDropdowns();
     }
   },
@@ -54,7 +60,7 @@ export default {
       return !!this.dropdown.length;
     },
     hasActiveDropdown() {
-      return !!this.$parent.activeDropdownHash
+      return !!this.$parent.activeDropdownHash;
     }
   },
   mounted() {
@@ -71,11 +77,11 @@ export default {
         item.isActive = hash === item.hash;
       });
     },
-    findDropdown(hash) {      
+    findDropdown(hash) {
       return this.dropdown.find(item => item.hash === hash);
     },
     disableDropdowns() {
-      this.dropdown.forEach(item => item.isActive = false);
+      this.dropdown.forEach(item => (item.isActive = false));
     }
   }
 };

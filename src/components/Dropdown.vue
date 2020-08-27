@@ -1,5 +1,5 @@
 <template>
-    <section
+  <section
     v-show="isActive"
     :aria-hidden="!isActive"
     class="c-tabs__content"
@@ -17,7 +17,9 @@ export default {
     id: { type: String },
     name: { type: String, required: true },
     badge: [String, Number],
-    badgeFront: Boolean
+    badgeFront: Boolean,
+    icon: String,
+    iconContent: String,
   },
   computed: {
     cleanId() {
