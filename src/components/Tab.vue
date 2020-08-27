@@ -22,7 +22,7 @@ export default {
     badge: [String, Number],
     badgeFront: Boolean,
     icon: String,
-    iconContent: String,
+    iconContent: String
   },
   data: () => ({
     isActive: false,

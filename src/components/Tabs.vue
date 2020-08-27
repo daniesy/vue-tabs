@@ -21,14 +21,20 @@
           class="c-tab__link"
           role="tab"
         >
-          <span v-if="tab.icon" class="c-icon" :class="tab.icon">{{ tab.iconContent }}</span>
-          <span v-if="tab.badge && tab.badgeFront" class="c-badge c-badge--before">{{
-            tab.badge
+          <span v-if="tab.icon" class="c-icon" :class="tab.icon">{{
+            tab.iconContent
           }}</span>
+          <span
+            v-if="tab.badge && tab.badgeFront"
+            class="c-badge c-badge--before"
+            >{{ tab.badge }}</span
+          >
           {{ tab.name }}
-          <span v-if="tab.badge && !tab.badgeFront" class="c-badge c-badge--after">{{
-            tab.badge
-          }}</span>
+          <span
+            v-if="tab.badge && !tab.badgeFront"
+            class="c-badge c-badge--after"
+            >{{ tab.badge }}</span
+          >
           <ul v-if="tab.hasDropdown" class="c-dropdown">
             <li
               class="c-dropdown__item"
@@ -43,7 +49,9 @@
                 :href="`${item.hash}`"
                 role="tab"
               >
-              <span v-if="item.icon" class="c-icon" :class="item.icon">{{ item.iconContent }}</span>
+                <span v-if="item.icon" class="c-icon" :class="item.icon">{{
+                  item.iconContent
+                }}</span>
                 <span v-if="item.badge && item.badgeFront" class="c-badge">{{
                   item.badge
                 }}</span>
@@ -137,7 +145,7 @@ export default {
       }
 
       this.$nextTick(() => {
-        this.moveBar(hash); 
+        this.moveBar(hash);
       });
 
       if (
@@ -173,15 +181,19 @@ export default {
     },
     moveBar(hash) {
       const [mainHash] = hash.split(":");
-      const element = document.querySelector(`a[href="${mainHash}"]`).parentElement;
-      this.borderStyle = { left: `${element.offsetLeft}px`, width: `${element.offsetWidth}px` };
+      const element = document.querySelector(`a[href="${mainHash}"]`)
+        .parentElement;
+      this.borderStyle = {
+        left: `${element.offsetLeft}px`,
+        width: `${element.offsetWidth}px`
+      };
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.c-tabs {  
+.c-tabs {
   ul {
     position: relative;
     display: flex;
