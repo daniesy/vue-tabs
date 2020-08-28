@@ -43,7 +43,9 @@ export default {
       this.disableDropdowns();
     },
     badge() {
-      this.$parent.moveBar(this.hash);
+      if (this.isActive) {
+        this.$parent.moveBar(this.hash);
+      }
     }
   },
   computed: {
