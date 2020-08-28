@@ -185,6 +185,9 @@ export default {
       return this.tabs.indexOf(selectedTab);
     },
     moveBar(hash) {
+      if (!hash) {
+        hash = this.activeTabHash;
+      }
       const [mainHash] = hash.split(":");
       const element = document.querySelector(`a[href="${mainHash}"]`)
         .parentElement;
