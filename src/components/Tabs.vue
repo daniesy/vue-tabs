@@ -81,7 +81,8 @@ export default {
     lastActiveTabHash: "",
     activeDropdownHash: "",
     lastActiveDropdownHash: "",
-    borderStyle: {}
+    borderStyle: {},
+    rafRunning: false,
   }),
   props: {
     options: {
@@ -96,6 +97,7 @@ export default {
     this.tabs = this.$children;
   },
   mounted() {
+    window.addEventListener("resize", this.windowResized);
     window.addEventListener("hashchange", () =>
       this.selectTab(window.location.hash)
     );
@@ -114,6 +116,9 @@ export default {
     if (this.tabs.length) {
       this.selectTab(this.tabs[0].hash);
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.windowResized);
   },
   methods: {
     findTab(hash) {
@@ -187,8 +192,17 @@ export default {
         left: `${element.offsetLeft}px`,
         width: `${element.offsetWidth}px`
       };
+    },
+    windowResized() {   
+      console.log("resized")  ;
+      if (this.rafRunning) {
+        window.cancelAnimationFrame(this.rafRunning);
+      }
+      this.rafRunning = window.requestAnimationFrame(() => {
+        this.moveBar(this.activeTabHash);
+      });
     }
-  }
+  },
 };
 </script>
 

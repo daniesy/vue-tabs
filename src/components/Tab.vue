@@ -1,6 +1,6 @@
 <template>
   <section
-    v-show="isActive"
+    v-if="isActive"
     :aria-hidden="!isActive"
     class="c-tabs__content"
     :id="cleanId"
@@ -41,6 +41,9 @@ export default {
         return;
       }
       this.disableDropdowns();
+    },
+    badge() {
+      this.$parent.moveBar(this.hash);
     }
   },
   computed: {
