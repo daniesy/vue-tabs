@@ -16,7 +16,7 @@
         <a
           :aria-controls="tab.hash"
           :aria-selected="tab.isActive"
-          @click="selectTab(tab.hash, $event)"
+          @click.prevent="selectTab(tab.hash, $event)"
           :href="tab.hash"
           class="c-tab__link"
           role="tab"
