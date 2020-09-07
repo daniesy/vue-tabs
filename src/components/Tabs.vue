@@ -171,6 +171,7 @@ export default {
         }
       });
 
+      window.location.hash = hash;
       this.$emit("changed", { tab: selectedTab, dropdown: selectedDropdown });
 
       this.activeTabIndex = this.getTabIndex(selectedTab);
